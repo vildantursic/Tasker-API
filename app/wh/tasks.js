@@ -45,7 +45,7 @@ api.get(function(req,res){
 //POST verb
 api.post(function(req,res){
 
-    connection.connection.query(whTasksPost, req.body.global, function(err, rows, fields) {
+    connection.connection.query(whTasksPost, req.body, function(err, rows, fields) {
         if (err) res.json(err);
 
         res.json(rows);

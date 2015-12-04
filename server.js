@@ -10,7 +10,7 @@ var io         = require('socket.io')(server);
 var bodyParser = require('body-parser');
 
 router.get('/',function(req,res){
-    res.send("Welcome to Task Manager API");
+    res.send("Welcome to Global GPS API");
 });
 
 /* Schemas */
@@ -31,6 +31,8 @@ var PMtasks = require('./app/pm/tasks').router;
 /* C5 communication */
 var C5mailer = require('./app/c5/mailer').router;
 var C5chat = require('./app/c5/chat').router;
+/* FinanceManager */
+var FNbanking = require('./app/fn/banking').router;
 
 
 // configure app to use bodyParser()
@@ -55,21 +57,68 @@ app.use('/', PMtasks);
 /////////////////
 app.use('/', C5mailer);
 app.use('/', C5chat);
+/////////////////
+app.use('/', FNbanking);
 
 // START THE SERVER
 // =============================================================================
 server.listen(port);
 console.log('listening on port: ' + port);
 
+var users = {};
+
 io.on('connection', function (socket) {
 
-    console.log('a user connected');
-    socket.on('disconnect', function(){
-        console.log('user disconnected');
+    socket.on('new user', function(data, callback){
+        if(data in users){
+            callback(false);
+        }
+        else {
+            callback(true);
+            socket.nickname = data;
+            //connectedUsers.push(socket.nickname);
+            users[socket.nickname] = socket;
+            userConnection();
+        }
     });
 
-    socket.on('chat message', function(msg){
-        io.emit('chat message', msg);
+    function userConnection(){
+        io.emit('usernames', Object.keys(users));
+    }
+
+    console.log('a user connected');
+
+    socket.on('chat message', function(data, callback){
+        var msg = data.trim();
+        if(msg.substr(0,3) === '/w '){
+            msg = msg.substr(3);
+            var ind = msg.indexOf(' ');
+            if(ind !== -1){
+                var name = msg.substring(0, ind);
+                msg = msg.substring(ind + 1);
+                if (name in users){
+                    users[name].emit('whisper', {msg: msg, nick: socket.nickname});
+                    console.log("whisper");
+                }
+                else {
+                    callback("Please enter a valid user");
+                }
+            }
+            else {
+                callback("Please enter message for you whisperer");
+            }
+        }
+        else{
+            io.emit('chat message', {msg: msg, nick: socket.nickname});
+        }
     });
+
+    socket.on('disconnect', function(){
+        console.log('user disconnected');
+        delete users[socket.nickname];
+        //connectedUsers.splice(connectedUsers.indexOf(socket.nickname), 1);
+        userConnection();
+    });
+
 
 });

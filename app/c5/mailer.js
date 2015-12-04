@@ -55,9 +55,18 @@ api.get(function(req,res){
 
             // list newest 10 messages
             client.listMessages(-20, function(err, messages){
-                if(err) res.json(err);
+                if(err){
+                    res.json(err);
+                    res.statusCode = 404;
+                }
 
                 res.json(messages);
+                res.statusCode = 200;
+
+                client.close();
+                client.on('close', function (){
+                    console.log('DISCONNECTED!');
+                });
 
             });
         });
@@ -67,10 +76,13 @@ api.get(function(req,res){
 //POST verb
 api.post(function(req,res){
 
+    client.on("new", function(message){
+        console.log("New incoming message " + message.title);
+    });
+
 });
 //PUT verb
 api.put(function(req,res){
-
 
 });
 //DELETE verb

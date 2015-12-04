@@ -6,7 +6,9 @@ var express    = require('express');
 var mysql      = require('mysql');
 
 var connection = mysql.createConnection({
-    host     : '192.168.0.3',
+    // host     : '192.168.0.3',
+    host     : '77.78.198.112',
+    port     : '33306',
     user     : 'root',
     password : 'globalgps',
     database : 'warehouse_task_management'

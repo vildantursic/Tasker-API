@@ -8,7 +8,7 @@ var dateFormat  = require('dateformat');
 var CronJob     = require('cron').CronJob;
 var connection  = require('./connection');
 
-var whProjectsGet = "SELECT * FROM `projects` WHERE 1 ORDER BY `id` DESC";
+var whProjectsGet = "SELECT * FROM `projects` WHERE 1 ORDER BY `id` DESC LIMIT 1000";
 var whProjectsPost = "INSERT INTO `projects` SET ?";
 var whProjectsDelete = "DELETE FROM `projects` WHERE ?";
 
@@ -30,36 +30,40 @@ api.all(function(req,res,next){
     next();
 });
 
-var job = new CronJob({
-    cronTime: '* * * * * *',
-    onTick: function() {
-        /*
-         * Runs every weekday (Monday through Friday)
-         * at 11:30:00 AM. It does not run on Saturday
-         * or Sunday.
-         */
-        //console.log(new Date());
+//var job = new CronJob({
+//    cronTime: '* * * * * *',
+//    onTick: function() {
+//        /*
+//         * Runs every weekday (Monday through Friday)
+//         * at 11:30:00 AM. It does not run on Saturday
+//         * or Sunday.
+//         */
+//        //console.log(new Date());
+//
+//        connection.connection.query(whProjectsPost, {title: new Date()} , function(err, rows, fields) {
+//            if (err) console.log(err);
+//
+//            //res.json(rows);
+//
+//        });
+//
+//    },
+//    start: false,
+//    timeZone: 'Europe/Belgrade'
+//});
 
-        connection.connection.query(whProjectsPost, {title: new Date()} , function(err, rows, fields) {
-            if (err) console.log(err);
-
-            //res.json(rows);
-
-        });
-
-    },
-    start: false,
-    timeZone: 'Europe/Belgrade'
-});
-
-job.start();
+//job.start();
 
 //GET projects
 api.get(function(req,res){
 
     connection.connection.query(whProjectsGet, function(err, rows, fields) {
-        if (err) res.json(err);
+        if (err) {
+            res.json(err);
+            res.statusCode = 404;
+        }
 
+        res.statusCode = 200;
         res.json(rows);
 
     });
@@ -68,14 +72,12 @@ api.get(function(req,res){
 //POST project
 api.post(function(req,res){
 
-    for(var i = 0; i <= 1000; i++) {
-        connection.connection.query(whProjectsPost, req.body, function (err, rows, fields) {
-            if (err) res.json(err);
+    connection.connection.query(whProjectsPost, req.body, function (err, rows, fields) {
+        if (err) res.json(err);
 
-            res.json(rows);
+        res.json(rows);
 
-        });
-    }
+    });
 
 });
 //PUT project
