@@ -5,7 +5,7 @@ var express    = require('express');
 var router     = express.Router();
 var fs         = require( "fs" );
 var dateFormat = require('dateformat');
-var connection = require('./connection');
+var pool = require('./connection');
 
 var now = new Date();
 
@@ -32,24 +32,37 @@ api.all(function(req,res,next){
     next();
 });
 
+//HELPER functions
+
+function requests(qry, req, res){
+  pool.pool.getConnection(function(err, connection) {
+    connection.query(qry, req, function(err, rows) {
+      if (err) {
+        res.json(err);
+        res.statusCode = 404;
+      }
+
+      res.statusCode = 200;
+      res.json(rows);
+
+      // And done with the connection.
+      connection.release();
+    });
+  });
+}
+
+// ==================== //
+
 //GET verb
 api.get(function(req,res){
 
-    connection.connection.query(whTasksGet, req.query, function(err, rows, fields) {
-        if (err) res.json(err);
-
-        res.json(rows);
-    });
+    requests(whTasksGet, req.query, res);
 
 });
 //POST verb
 api.post(function(req,res){
 
-    connection.connection.query(whTasksPost, req.body, function(err, rows, fields) {
-        if (err) res.json(err);
-
-        res.json(rows);
-    });
+    requests(whTasksPost, req.body, res);
 
 });
 //PUT verb
@@ -61,23 +74,15 @@ api.put(function(req,res){
     delete data.id;
     delete data.start_time;
 
-    connection.connection.query(whTasksPut + id, data, function(err, rows, fields) {
-        if (err) res.json(err);
+    req.data = data;
 
-        res.json(rows);
-    });
+    requests(whTasksPut + id, req.data, res);
 
 });
 //DELETE verb
 api.delete(function(req,res){
 
-    var id = req.query.id;
-
-    connection.connection.query(whTasksDelete + req.query.id, function(err, rows, fields) {
-        if (err) res.json(err);
-
-        res.json(rows);
-    });
+    requests(whTasksDelete + req.query.id, req, res);
 
 });
 //this line is the Master
