@@ -67,6 +67,8 @@ console.log('listening on port: ' + port);
 
 var users = {};
 
+module.exports.io = io;
+
 io.on('connection', function (socket) {
 
     socket.on('new user', function(data, callback){

@@ -7,6 +7,8 @@ var fs          = require( "fs" );
 var dateFormat  = require('dateformat');
 var CronJob     = require('cron').CronJob;
 var pool  = require('./connection');
+var server     = require('http')
+var io = require('socket.io')(server);
 
 var whProjectsGet = "SELECT * FROM `projects` WHERE 1 ORDER BY `id` DESC LIMIT 1000";
 var whProjectsPost = "INSERT INTO `projects` SET ?";
@@ -30,6 +32,11 @@ api.all(function(req,res,next){
   next();
 });
 
+io.on('connection', function(socket){
+  console.log("ok");
+  io.emit('project', 'proj creat');
+})
+
 //HELPER functions
 
 function requests(qry, req, res){
@@ -51,60 +58,47 @@ function requests(qry, req, res){
 
 // ==================== //
 
-//var job = new CronJob({
-//    cronTime: '* * * * * *',
-//    onTick: function() {
-//        /*
-//         * Runs every weekday (Monday through Friday)
-//         * at 11:30:00 AM. It does not run on Saturday
-//         * or Sunday.
-//         */
-//        //console.log(new Date());
-//
-//        connection.connection.query(whProjectsPost, {title: new Date()} , function(err, rows, fields) {
-//            if (err) console.log(err);
-//
-//            //res.json(rows);
-//
-//        });
-//
-//    },
-//    start: false,
-//    timeZone: 'Europe/Belgrade'
-//});
+var job = new CronJob({
+   cronTime: '30 * * * * *',
+   onTick: function() {
+       /*
+        * Runs every weekday (Monday through Friday)
+        * at 11:30:00 AM. It does not run on Saturday
+        * or Sunday.
+        */
 
-//job.start();
+        pool.pool.getConnection(function(err, connection) {
+          connection.query(whProjectsPost, {title: new Date()}, function(err, rows) {
+            if (err) {
+              throw err;
+              // res.json(err);
+              // res.statusCode = 404;
+            }
+
+            // res.statusCode = 200;
+            // res.json(rows);
+            console.log('Project Created');
+
+            // And done with the connection.
+            connection.release();
+          });
+        });
+
+   },
+   start: false,
+   timeZone: 'Europe/Belgrade'
+});
+
+job.start();
 
 //GET projects
 api.get(function(req,res){
-
-  // pool.pool.getConnection(function(err, connection) {
-  //   connection.query(whProjectsGet, function(err, rows) {
-  //     if (err) {
-  //       res.json(err);
-  //       res.statusCode = 404;
-  //     }
-  //
-  //     res.statusCode = 200;
-  //     res.json(rows);
-  //
-  //     // And done with the connection.
-  //     connection.release();
-  //   });
-  // });
 
   requests(whProjectsGet, req, res);
 
 });
 //POST project
 api.post(function(req,res){
-
-  // connection.connection.query(whProjectsPost, req.body, function (err, rows, fields) {
-  //   if (err) res.json(err);
-  //
-  //   res.json(rows);
-  //
-  // });
 
   requests(whProjectsPost, req.body, res);
 
@@ -115,13 +109,6 @@ api.put(function(req,res){
 });
 //DELETE project
 api.delete(function(req,res){
-
-  // connection.connection.query(whProjectsDelete, req.body, function(err, rows, fields) {
-  //   if (err) res.json(err);
-  //
-  //   res.json(rows);
-  //
-  // });
 
   requests(whProjectsDelete, req.body, res);
 
