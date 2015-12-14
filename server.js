@@ -4,6 +4,7 @@
 // call the packages we need
 var express    = require('express');        // call express
 var router     = express.Router();
+var cors       = require('cors');
 var app        = express();                 // define our app using express
 var server     = require('http').Server(app);
 var io         = require('socket.io')(server);
@@ -41,6 +42,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 7001;        // set our port
+
+//setup CORS port in testing case
+app.listen(7002, function(){
+  console.log('CORS-enabled web server listening on port 7002');
+});
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api

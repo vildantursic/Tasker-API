@@ -59,7 +59,7 @@ function requests(qry, req, res){
 // ==================== //
 
 var job = new CronJob({
-   cronTime: '30 * * * * *',
+   cronTime: '00 30 11 * * 1-5',
    onTick: function() {
        /*
         * Runs every weekday (Monday through Friday)
