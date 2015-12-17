@@ -8,11 +8,11 @@ var mysql      = require('mysql');
 var pool = mysql.createPool({
     // host     : '192.168.0.3',
     connectionLimit : 10,
-    host     : '77.78.198.112',
-    port     : '33306',
-    user     : 'root',
-    password : 'globalgps',
-    database : 'warehouse_task_management'
+    host            : '192.168.0.3',
+    port            : '3306',
+    user            : 'root',
+    password        : 'globalgps',
+    database        : 'warehouse_task_management'
 });
 
 // connection.connect(function(err) {

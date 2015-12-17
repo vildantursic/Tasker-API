@@ -91,6 +91,12 @@ var job = new CronJob({
 
 job.start();
 
+// options for CORS requsts
+api.options(function(req, res){
+  res.json({});
+  console.log("something hit options");
+});
+
 //GET projects
 api.get(function(req,res){
 

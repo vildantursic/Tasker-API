@@ -53,6 +53,12 @@ function requests(qry, req, res){
 
 // ==================== //
 
+// options for CORS requsts
+api.options(function(req, res){
+  res.json({});
+  console.log("something hit options");
+});
+
 //GET verb
 api.get(function(req,res){
 
