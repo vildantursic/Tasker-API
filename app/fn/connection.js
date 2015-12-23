@@ -5,9 +5,19 @@
 var express    = require('express');
 var mysql      = require('mysql');
 
-var pool = mysql.createPool({
+// var pool = mysql.createPool({
+//     // host     : '192.168.0.3',
+//     //connectionLimit : 10,
+//     host            : '192.168.0.3',
+//     port            : '3306',
+//     user            : 'root',
+//     password        : 'globalgps',
+//     database        : 'finances'
+// });
+
+var connection = mysql.createConnection({
     // host     : '192.168.0.3',
-    connectionLimit : 10,
+    //connectionLimit : 10,
     host            : '192.168.0.3',
     port            : '3306',
     user            : 'root',
@@ -15,14 +25,14 @@ var pool = mysql.createPool({
     database        : 'finances'
 });
 
-// connection.connect(function(err) {
-//     if (err) {
-//         console.error('error connecting: ' + err.stack);
-//         return;
-//     }
-//
-//     console.log('connected as id ' + connection.threadId);
-// });
+connection.connect(function(err) {
+    if (err) {
+        console.error('error connecting: ' + err.stack);
+        return;
+    }
+
+    console.log('connected as id ' + connection.threadId);
+});
 
 
-module.exports.pool = pool;
+module.exports = connection;

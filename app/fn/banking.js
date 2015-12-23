@@ -6,12 +6,18 @@ var router     = express.Router();
 var fs         = require( "fs" );
 var S          = require('string');
 var dateFormat = require('dateformat');
-var pool = require('./connection');
+// var pool = require('./connection');
+var connection = require('./connection');
 var xmlreader  = require('xmlreader');
 var multiparty = require('connect-multiparty');
+var path       = require('path');
+
+var loc = path.join(__dirname, 'BANKING');
+
+
 var multipartyMiddleware = multiparty({
   autoFiles: true,
-  uploadDir: '~/Documents/BANKING'
+  uploadDir: loc
 });
 
 var fnRaiffaizenBankingGet = "SELECT * FROM `Receipt`";
@@ -50,30 +56,48 @@ api.get(function(req, res){
 
   if(req.query.bank === "BBI"){
 
-    pool.pool.getConnection(function(err, connection) {
-      connection.query(fnBbiBankingGet, function(err, rows) {
-          if (err) res.json(err);
+    // pool.pool.getConnection(function(err, connection) {
+    //   connection.query(fnBbiBankingGet, function(err, rows) {
+    //       if (err) res.json(err);
+    //
+    //       res.json(rows);
+    //
+    //       // And done with the connection.
+    //       connection.release();
+    //   });
+    // });
 
-          res.json(rows);
+    connection.query(fnBbiBankingGet, function(err, rows) {
+        if (err) res.json(err);
 
-          // And done with the connection.
-          connection.release();
-      });
+        res.json(rows);
+
+        // And done with the connection.
+        connection.release();
     });
 
   }
   else if(req.query.bank === "RFBI"){
 
-    pool.pool.getConnection(function(err, connection) {
-      connection.query(fnRaiffaizenBankingGet, function(err, rows) {
-          if (err) res.json(err);
+    // pool.pool.getConnection(function(err, connection) {
+    //   connection.query(fnRaiffaizenBankingGet, function(err, rows) {
+    //       if (err) res.json(err);
+    //
+    //       res.json(rows);
+    //
+    //       // And done with the connection.
+    //       connection.release();
+    //   });
+    // });
 
-          res.json(rows);
+    connection.query(fnRaiffaizenBankingGet, function(err, rows) {
+         if (err) res.json(err);
 
-          // And done with the connection.
-          connection.release();
-      });
-    });
+         res.json(rows);
+
+         // And done with the connection.
+         connection.release();
+     });
 
   }
 
@@ -112,13 +136,20 @@ api.post(multipartyMiddleware, function(req,res){
           // getting all data from single object and uploading to database
           for(var i=0; i<dbTransaction.length; i++){
 
-            pool.pool.getConnection(function(err, connection) {
-              connection.query(BankingPost, dbTransaction[i], function(err, rows) {
-                  if (err) res.json(err);
+            // pool.pool.getConnection(function(err, connection) {
+            //   connection.query(BankingPost, dbTransaction[i], function(err, rows) {
+            //       if (err) res.json(err);
+            //
+            //       // And done with the connection.
+            //       connection.release();
+            //   });
+            // });
 
-                  // And done with the connection.
-                  connection.release();
-              });
+            connection.query(BankingPost, dbTransaction[i], function(err, rows) {
+                if (err) res.json(err);
+
+                // And done with the connection.
+                connection.release();
             });
 
           }
