@@ -11,7 +11,7 @@ var xmlreader  = require('xmlreader');
 var multiparty = require('connect-multiparty');
 var multipartyMiddleware = multiparty({
   autoFiles: true,
-  uploadDir: '/home/vildantursic/Documents/viky'
+  uploadDir: '~/Documents/BANKING'
 });
 
 var fnRaiffaizenBankingGet = "SELECT * FROM `Receipt`";

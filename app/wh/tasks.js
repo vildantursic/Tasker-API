@@ -9,7 +9,7 @@ var pool = require('./connection');
 
 var now = new Date();
 
-var whTasksGet = "SELECT * FROM `tasks` WHERE ? ORDER BY `start_time` DESC";
+var whTasksGet = "SELECT * FROM `tasks` WHERE ? ORDER BY `start_time` ASC";
 var whTasksPost = "INSERT INTO `tasks` SET ?";
 var whTasksPut = "UPDATE tasks SET ? WHERE id = ";
 var whTasksDelete = "DELETE FROM `tasks` WHERE id = ";
@@ -79,10 +79,12 @@ api.put(function(req,res){
     var data = req.body;
     delete data.id;
     delete data.start_time;
+    delete data.sub;
+    delete data.subtask;
 
-    req.data = data;
+    req.body = data;
 
-    requests(whTasksPut + id, req.data, res);
+    requests(whTasksPut + id, req.body, res);
 
 });
 //DELETE verb
