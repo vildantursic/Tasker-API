@@ -19,19 +19,22 @@ var userSchema  = require('./app/models/user');
 
 /* Routes */
 /* TaskManager */
-//var TMusers = require('./app/tm/users').router;
-//var TMtasks = require('./app/tm/tasks').router;
-//var TMprojects = require('./app/tm/projects').router;
+var TMtasks = require('./app/tm/tasks').router;
+/* FleetManager */
+var FMroute = require('./app/fm/route').router;
 /* WarehouseManager */
 var WHprojects = require('./app/wh/projects').router;
 var WHtasks = require('./app/wh/tasks').router;
 var WHorders = require('./app/wh/orders').router;
+var WHreservation = require('./app/wh/reservation').router;
 /* ProjectManager */
 var PMprojects = require('./app/pm/projects').router;
 var PMtasks = require('./app/pm/tasks').router;
 /* C5 communication */
 var C5mailer = require('./app/c5/mailer').router;
 var C5chat = require('./app/c5/chat').router;
+var C5stock = require('./app/c5/stock').router;
+var C5warehouses = require('./app/c5/warehouses').router;
 /* FinanceManager */
 var FNbanking = require('./app/fn/banking').router;
 
@@ -50,19 +53,22 @@ app.listen(7002, function(){
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
-//app.use('/', TMusers);
-//app.use('/', TMtasks);
-//app.use('/', TMprojects);
+app.use('/', TMtasks);
+/////////////////
+app.use('/', FMroute);
 /////////////////
 app.use('/', WHprojects);
 app.use('/', WHtasks);
 app.use('/', WHorders);
+app.use('/', WHreservation);
 /////////////////
 app.use('/', PMprojects);
 app.use('/', PMtasks);
 /////////////////
 app.use('/', C5mailer);
 app.use('/', C5chat);
+app.use('/', C5stock);
+app.use('/', C5warehouses);
 /////////////////
 app.use('/', FNbanking);
 

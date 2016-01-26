@@ -12,8 +12,7 @@ var pool = mysql.createPool({
     port            : '3306',
     user            : 'root',
     password        : 'globalgps',
-    database        : 'warehouse_task_management',
-    multipleStatements: true
+    database        : 'warehouse'
 });
 
 // connection.connect(function(err) {
