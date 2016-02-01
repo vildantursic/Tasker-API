@@ -9,17 +9,13 @@ var pool = require('./connection');
 
 var now = new Date();
 
-var fmRequestGet = "SELECT * FROM `requests`";
-var fmRequestStoreProcedure = "CALL createRoute(";
-
-// var fmRequestPut = "UPDATE requests SET ? WHERE id = ";
-// var fmRequestDelete = "DELETE FROM `requests` WHERE id = ";
+var tmDelailsGet = "SELECT * FROM `tasks` WHERE id=";
 
 // ROUTES FOR OUR API
 // =============================================================================
 
 /*RESTful API Router*/
-var api = router.route('/api/v1/fm/route');
+var api = router.route('/api/v1/tm/details');
 //middleware api
 api.all(function(req,res,next){
 
@@ -55,13 +51,36 @@ function requests(qry, req, res, ad){
       // And done with the connection.
       connection.release();
     });
-
-    // qry.on('result', function(fields, index){
-    //   console.log(fields);
-    // })
-
   });
 }
+
+function routing(data){
+
+  var task_specifics = JSON.parse(data[0].task_specifics);
+  var decodedString = new Buffer(task_specifics[0].value, 'base64');
+  var new_data = JSON.parse(decodedString.toString());
+
+  var myData = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": new_data,
+        "properties": {
+          "color": "blue"
+        }
+      }
+    ]
+  }
+
+  data[0].task_specifics = [task_specifics[2], myData];
+
+  for(var i=1; i< data.length; i++){
+    data[i].task_specifics = JSON.parse(data[i].task_specifics);
+  }
+
+  return data;
+};
 
 // ==================== //
 
@@ -74,13 +93,15 @@ api.options(function(req, res){
 //GET verb
 api.get(function(req,res){
 
-  // requests(fmRequestGet, req, res, false);
+    // console.log(req.query.id);
+
+    // res.json(req.query.id);
+
+    requests(tmDelailsGet+req.query.id, req, res, false);
 
 });
 //POST verb
 api.post(function(req,res){
-
-  requests('CALL createRoute("'+req.body.coordinates+'","'+req.body.stop_types+'","'+req.body.start_name+'","'+req.body.end_name+'","'+req.body.project+'",'+'@result'+'); Select @result', req, res, false);
 
 });
 //PUT verb

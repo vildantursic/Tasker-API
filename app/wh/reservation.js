@@ -5,11 +5,7 @@ var express    = require('express');
 var router     = express.Router();
 var fs         = require( "fs" );
 var dateFormat = require('dateformat');
-var gpxParse = require('gpx-parse');
 var pool = require('./connection');
-var tj = require('togeojson');
-var osmGpx = require('osm-gpx');
-var jsdom = require('jsdom').jsdom;
 
 var now = new Date();
 
@@ -49,7 +45,7 @@ function requests(qry, req, res, ad){
 
       if(ad){
         res.statusCode = 200;
-        res.json(routing(rows));
+        res.json(reqWh(rows));
       }
       else {
         res.statusCode = 200;
@@ -61,6 +57,24 @@ function requests(qry, req, res, ad){
     });
 
   });
+}
+
+function reqWh(rows){
+  console.log(rows);
+
+  pool.pool.getConnection(function(err, connection) {
+    connection.query('CALL warehouse.createRequest("'+rows[1][0]["@result"]+'", @result'+'); SELECT @result;', function(err, rows) {
+      if (err) console.log(err);
+
+      return rows;
+
+      // And done with the connection.
+      connection.release();
+
+
+    });
+  });
+
 }
 
 // ==================== //
@@ -82,7 +96,7 @@ api.post(function(req,res){
 
   // console.log(req.body);
 
-  requests('CALL warehouse.createReservation("'+req.body.warehouses+'","'+req.body.items+'","'+req.body.quantities+'","'+req.body.purpose+'",'+'@result'+'); SELECT @result', req, res, false);
+  requests('CALL warehouse.createReservation("'+req.body.warehouses+'","'+req.body.items+'","'+req.body.quantities+'","'+req.body.purpose+'",'+'@result'+'); SELECT @result;', req, res, true);
 
 });
 //PUT verb

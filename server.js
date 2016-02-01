@@ -20,6 +20,7 @@ var userSchema  = require('./app/models/user');
 /* Routes */
 /* TaskManager */
 var TMtasks = require('./app/tm/tasks').router;
+var TMdetails = require('./app/tm/details').router;
 /* FleetManager */
 var FMroute = require('./app/fm/route').router;
 /* WarehouseManager */
@@ -54,6 +55,7 @@ app.listen(7002, function(){
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/', TMtasks);
+app.use('/', TMdetails);
 /////////////////
 app.use('/', FMroute);
 /////////////////

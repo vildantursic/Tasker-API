@@ -5,11 +5,7 @@ var express    = require('express');
 var router     = express.Router();
 var fs         = require( "fs" );
 var dateFormat = require('dateformat');
-var gpxParse = require('gpx-parse');
 var pool = require('./connection');
-var tj = require('togeojson');
-var osmGpx = require('osm-gpx');
-var jsdom = require('jsdom').jsdom;
 
 var now = new Date();
 

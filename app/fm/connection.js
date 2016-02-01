@@ -12,7 +12,7 @@ var pool = mysql.createPool({
     port            : '3306',
     user            : 'root',
     password        : 'globalgps',
-    database        : 'fleet_management2',
+    database        : 'fleet_management3',
     multipleStatements: true
 });
 
