@@ -39,6 +39,12 @@ io.on('connection', function(socket){
 
 //HELPER functions
 
+/**
+ * Gets data from database and returns data in Json format.
+ * @param {string} qry - Query for database.
+ * @param {string} req - Request data which is passed to query (body or query).
+ * @param {string} res - Response parameter for returning data in Json format.
+ */
 function requests(qry, req, res){
   pool.pool.getConnection(function(err, connection) {
     connection.query(qry, req, function(err, rows) {
@@ -90,6 +96,7 @@ var job = new CronJob({
 });
 
 job.start();
+
 
 // options for CORS requsts
 api.options(function(req, res){

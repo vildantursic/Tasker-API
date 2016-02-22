@@ -56,48 +56,30 @@ api.get(function(req, res){
 
   if(req.query.bank === "BBI"){
 
-    // pool.pool.getConnection(function(err, connection) {
-    //   connection.query(fnBbiBankingGet, function(err, rows) {
-    //       if (err) res.json(err);
-    //
-    //       res.json(rows);
-    //
-    //       // And done with the connection.
-    //       connection.release();
-    //   });
-    // });
+    pool.pool.getConnection(function(err, connection) {
+      connection.query(fnBbiBankingGet, function(err, rows) {
+          if (err) res.json(err);
 
-    connection.query(fnBbiBankingGet, function(err, rows) {
-        if (err) res.json(err);
+          res.json(rows);
 
-        res.json(rows);
-
-        // And done with the connection.
-        connection.release();
+          // And done with the connection.
+          connection.release();
+      });
     });
 
   }
   else if(req.query.bank === "RFBI"){
 
-    // pool.pool.getConnection(function(err, connection) {
-    //   connection.query(fnRaiffaizenBankingGet, function(err, rows) {
-    //       if (err) res.json(err);
-    //
-    //       res.json(rows);
-    //
-    //       // And done with the connection.
-    //       connection.release();
-    //   });
-    // });
+    pool.pool.getConnection(function(err, connection) {
+      connection.query(fnRaiffaizenBankingGet, function(err, rows) {
+          if (err) res.json(err);
 
-    connection.query(fnRaiffaizenBankingGet, function(err, rows) {
-         if (err) res.json(err);
+          res.json(rows);
 
-         res.json(rows);
-
-         // And done with the connection.
-         connection.release();
-     });
+          // And done with the connection.
+          connection.release();
+      });
+    });
 
   }
 
@@ -124,7 +106,7 @@ api.post(multipartyMiddleware, function(req,res){
           //getting parsed data in json format
           dbTransaction = getJsonFromXml(data, bank);
 
-          console.log(dbTransaction);
+          // console.log(dbTransaction);
 
           if (bank === "BBI"){
             BankingPost = fnBbiBankingPost;
@@ -136,20 +118,13 @@ api.post(multipartyMiddleware, function(req,res){
           // getting all data from single object and uploading to database
           for(var i=0; i<dbTransaction.length; i++){
 
-            // pool.pool.getConnection(function(err, connection) {
-            //   connection.query(BankingPost, dbTransaction[i], function(err, rows) {
-            //       if (err) res.json(err);
-            //
-            //       // And done with the connection.
-            //       connection.release();
-            //   });
-            // });
+            pool.pool.getConnection(function(err, connection) {
+              connection.query(BankingPost, dbTransaction[i], function(err, rows) {
+                  if (err) res.json(err);
 
-            connection.query(BankingPost, dbTransaction[i], function(err, rows) {
-                if (err) res.json(err);
-
-                // And done with the connection.
-                connection.release();
+                  // And done with the connection.
+                  connection.release();
+              });
             });
 
           }
@@ -167,6 +142,13 @@ module.exports.router = router;
 // Going down the stream, parsing all data from object to satisfy object for storing into db
 // functions are separated so they can be stored in another file or reused later.
 
+/**
+ * Json to XML parser
+ *
+ * @param {object} xmlObject - xml object
+ * @param {string} bank - name of bank for which data is passed
+ * @return {object} transaction - Json formated transaction data
+ */
 function getJsonFromXml(xmlObject, bank) {
 
   var transactions = [];
@@ -222,6 +204,11 @@ function getJsonFromXml(xmlObject, bank) {
 
 //Because IZ (izvod) is main xml representative we decided to include it as part of each transaction or PR ()
 //this function is concatinating IZ with each PR object from IZ.
+
+/**
+ * Collect data to single object for easier management of data.
+ * @return {object} transaction - single transaction object.
+ */
 function collectDataToOneObject() {
   var ret = {};
   var len = arguments.length;
