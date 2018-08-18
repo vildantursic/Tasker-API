@@ -7,7 +7,7 @@ var inbox        = require("inbox");
 
 var data = {
     user: 'vildantursic@hotmail.com',
-    pass: 'myhunnybunny111',
+    pass: '-------',
     mail: 'imap-mail.outlook.com'
 };
 
